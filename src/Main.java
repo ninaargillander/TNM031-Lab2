@@ -32,8 +32,8 @@ public class Main {
     }
 
 
-    // Bob -> väljer två primtal p och q (dessa är hemliga)
-
+    
+    //Function that generate a big interger primenumber
     private static BigInteger generatePrime() {
         BigInteger number;
         Random rand = new Random();
@@ -43,6 +43,7 @@ public class Main {
         return number;
     }
 
+    // Function that calls generatePrime and send the user 2 public keys and 1 private key
     private static BigInteger[] keys(){
     	
         BigInteger p, q, n, d, e;
@@ -51,22 +52,22 @@ public class Main {
 
         n = p.multiply(q);
 
+        
         e = generatePrime();
         
-        //System.out.println(e.gcd((p.subtract(BigInteger.valueOf(1))).multiply(q.subtract(BigInteger.valueOf(1)))));
-        while(e.gcd((p.subtract(BigInteger.valueOf(1))).multiply(q.subtract(BigInteger.valueOf(1)))).intValue() != 1){
+        BigInteger phi = p.subtract(BigInteger.valueOf(1)).multiply(q.subtract(BigInteger.valueOf(1)));
+        //Checks if the gcd of e and (p-1)(q-1) is 1 otherwise generate another prime
+        while(e.gcd(phi).intValue() != 1){
             e = generatePrime();
         }
-
-        BigInteger k = BigInteger.valueOf(3);
-        BigInteger pq_minus1 = p.subtract(BigInteger.valueOf(1)).multiply(q.subtract(BigInteger.valueOf(1)));
-        d = ((pq_minus1.multiply(k)).add(BigInteger.valueOf((1)))).divide(e);
- 
+        //System.out.println(e);
+        System.out.println("This is the e.gcd(pq_minus1): " + e.gcd(phi));
+        //Calculations for d
+        d = e.modInverse(phi);
         
-        System.out.println((e.multiply(d)).mod(pq_minus1));
-        		
+        System.out.println("This is the e*d mod pqminus1: " + e.multiply(d).mod(phi));
 
-        
+        //Saves the 3 keys as an array and send it to the main, to the user
         BigInteger[] result = new BigInteger[3];
         result[0] = e;
         result[1] = n;
@@ -75,22 +76,20 @@ public class Main {
         return result;
     }
 
+    //Function that encrypt the message and returns a big integer 
     private static BigInteger encrypt(BigInteger public_e, BigInteger public_n, String text){
-        BigInteger msg = new BigInteger(text.getBytes());
-
-        return msg.modPow(public_e, public_n);
+        BigInteger c = new BigInteger(text.getBytes());
+        BigInteger encrypt_msg = c.modPow(public_e, public_n);
+        	
+        return encrypt_msg;
     }
 
+    //Function that decrypt the message with private key and returns the string message
     private static String decrypt(BigInteger private_d, BigInteger public_n, BigInteger c){
         BigInteger msg = c.modPow(private_d, public_n);
-
-        return new String(msg.toByteArray());
+        String decrypted_message = new String(msg.toByteArray());
+        return decrypted_message;
     }
 }
-// p*q = n
-// Bob -> väljer e så SGM(e, (p-1)*(q-1)) = 1
-// Bob -> beräknar d så e*d mod ((p-1)*(q-1)) = 1
-// Bob gör n och e publikt
-// Alice krypterar m som c = m^e mod n och skickar c till Bob
-// bob dekrypterar genom att beräkna m = c^d mod n
+
 
