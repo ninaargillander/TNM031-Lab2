@@ -8,14 +8,17 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
+    	
+    	
         BigInteger e, n, d;
         BigInteger[] myKeys;
-
+        
         myKeys = keys();
         e = myKeys[0];
         n = myKeys[1];
         d = myKeys[2];
-
+        
+        
         String message = "Hej hej Louise";
         System.out.println("Message before: " + message);
 
@@ -41,6 +44,7 @@ public class Main {
     }
 
     private static BigInteger[] keys(){
+    	
         BigInteger p, q, n, d, e;
         p = generatePrime();
         q = generatePrime();
@@ -48,15 +52,21 @@ public class Main {
         n = p.multiply(q);
 
         e = generatePrime();
-        while(e.gcd((p.subtract(BigInteger.valueOf(1))).multiply(q.subtract(BigInteger.valueOf(1) ))) != BigInteger.valueOf(1)){
+        
+        //System.out.println(e.gcd((p.subtract(BigInteger.valueOf(1))).multiply(q.subtract(BigInteger.valueOf(1)))));
+        while(e.gcd((p.subtract(BigInteger.valueOf(1))).multiply(q.subtract(BigInteger.valueOf(1)))).intValue() != 1){
             e = generatePrime();
         }
 
-        d = generatePrime();
-        while(d.mod((p.subtract(BigInteger.valueOf(1))).multiply(q.subtract(BigInteger.valueOf(1) ))) != BigInteger.valueOf(1)){
-            d = generatePrime();
-        }
+        BigInteger k = BigInteger.valueOf(3);
+        BigInteger pq_minus1 = p.subtract(BigInteger.valueOf(1)).multiply(q.subtract(BigInteger.valueOf(1)));
+        d = ((pq_minus1.multiply(k)).add(BigInteger.valueOf((1)))).divide(e);
+ 
+        
+        System.out.println((e.multiply(d)).mod(pq_minus1));
+        		
 
+        
         BigInteger[] result = new BigInteger[3];
         result[0] = e;
         result[1] = n;
