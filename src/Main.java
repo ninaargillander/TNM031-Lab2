@@ -1,5 +1,7 @@
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.io.*;
 import java.util.Random;
 
 // Generate public and private keys
@@ -19,7 +21,14 @@ public class Main {
         d = myKeys[2];
         
         
-        String message = "Hej hej Louise";
+        String message = "";
+        System.out.println("Type message: ");
+		try {
+			message = (new BufferedReader(new InputStreamReader(System.in))).readLine();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         System.out.println("Message before: " + message);
 
         BigInteger encrypted = encrypt(e,n, message);
@@ -36,10 +45,11 @@ public class Main {
     //Function that generate a big interger primenumber
     private static BigInteger generatePrime() {
         BigInteger number;
-        Random rand = new Random();
-        number = BigInteger.valueOf(rand.nextInt(100000) + 1);
+        SecureRandom rand = new SecureRandom();
+        int bitlength = 1000;
+        //number = BigInteger.valueOf(rand.nextInt(100000) + 1);
 
-        number = number.nextProbablePrime();
+        number = BigInteger.probablePrime(bitlength, rand);
         return number;
     }
 
@@ -56,7 +66,7 @@ public class Main {
         e = generatePrime();
         
         BigInteger phi = p.subtract(BigInteger.valueOf(1)).multiply(q.subtract(BigInteger.valueOf(1)));
-        //Checks if the gcd of e and (p-1)(q-1) is 1 otherwise generate another prime
+        //Checks if the gcd of e and phi is 1 otherwise generate another prime
         while(e.gcd(phi).intValue() != 1){
             e = generatePrime();
         }
